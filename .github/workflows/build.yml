@@ -1,4 +1,4 @@
-name: Publish MyModule
+name: Publish GraphTools
 on:
   release:
     types:
