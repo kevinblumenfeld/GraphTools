@@ -14,6 +14,7 @@ Param(
 )
 Install-Module -Name ModuleBuilder -Force
 $modulePath = [IO.Path]::Combine($PSScriptRoot, 'Module')
+$outputPath = [IO.Path]::Combine($PSScriptRoot, 'Output')
 Build-Module -Path $modulePath -Verbose
 
-Publish-Module -Path $modulePath -NuGetApiKey $env:PSGALLERY_TOKEN
+Publish-Module -Path $outputPath -NuGetApiKey $env:PSGALLERY_TOKEN
