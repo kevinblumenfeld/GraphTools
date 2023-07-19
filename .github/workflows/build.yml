@@ -15,7 +15,7 @@ jobs:
     - name: Build module
       shell: pwsh
       run: |
-        ./Build.ps1 -Build -Publish -GalleryToken $env:PSGALLERY_TOKEN
+        ./Build.ps1 -InstallDependencies -Build -Publish -GalleryToken $env:PSGALLERY_TOKEN
 
       env:
         PSGALLERY_TOKEN: ${{ secrets.PSGALLERY_TOKEN }}  # This is sourced from your GHA secrets
