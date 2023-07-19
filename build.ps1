@@ -12,7 +12,7 @@ Param(
     [string]
     $GalleryToken
 )
-Install-Module -Name ModuleBuilder -Force
+Install-Module -Name ModuleBuilder -Force -Repository PSGallery
 $modulePath = [IO.Path]::Combine($PSScriptRoot, 'Module')
 $outputPath = [IO.Path]::Combine($PSScriptRoot, 'Output')
 Build-Module -Path $modulePath -Verbose
