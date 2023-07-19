@@ -13,7 +13,7 @@ Param(
     $GalleryToken
 )
 Install-Module -Name ModuleBuilder -Force
-$TempPath = (Get-gtem TEMP:\).fullname
-Build-Module -Path $TempPath -Verbose
+$modulePath = [IO.Path]::Combine($PSScriptRoot, 'Module')
+Build-Module -Path $modulePath -Verbose
 
-Publish-Module GraphTools -NuGetApiKey $env:PSGALLERY_TOKEN
+Publish-Module -Path $modulePath -NuGetApiKey $env:PSGALLERY_TOKEN
