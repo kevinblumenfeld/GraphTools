@@ -2,6 +2,10 @@
 Param(
     [Parameter()]
     [switch]
+    $InstallDependencies,
+    
+    [Parameter()]
+    [switch]
     $Build,
 
     [Parameter()]
@@ -12,9 +16,17 @@ Param(
     [string]
     $GalleryToken
 )
-Install-Module -Name ModuleBuilder -Force -Repository PSGallery
+
 $modulePath = [IO.Path]::Combine($PSScriptRoot, 'Module')
 $outputPath = [IO.Path]::Combine($PSScriptRoot, 'Output')
-Build-Module -Path $modulePath -Verbose
 
-Publish-Module -Path $outputPath -NuGetApiKey $env:PSGALLERY_TOKEN
+if ($InstallDependencies) {
+    Install-Module -Name ModuleBuilder -Force -Repository PSGallery
+}
+if ($Build) {
+    Build-Module -Path $modulePath -Verbose
+}
+if ($Publish) {
+    Publish-Module -Path $outputPath -NuGetApiKey $env:PSGALLERY_TOKEN
+}
+
