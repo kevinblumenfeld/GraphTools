@@ -82,7 +82,7 @@ function Get-gUserDeleted {
     [CmdletBinding()]
     param (
         [Parameter( Mandatory, ValueFromPipeline, ParameterSetName = 'pipeline' )]
-        [ArgumentCompleter([completer_iUser_Deleted_DisplayName])]
+        [ArgumentCompleter([completer_gUser_Deleted_DisplayName])]
         [object]
         $User,
 

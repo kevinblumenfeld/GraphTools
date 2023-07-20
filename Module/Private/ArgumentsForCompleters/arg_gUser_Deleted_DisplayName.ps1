@@ -15,6 +15,8 @@ function arg_gUser_Deleted_DisplayName {
         $WordToComplete
     )
 
+    
+    
     $RestSplat = @{
         Uri     = "https://graph.microsoft.com/beta/directory/deletedItems/microsoft.graph.user?`$filter={0}&top=50&select=DisplayName" -f (
             [System.Web.HttpUtility]::UrlEncode(('startswith({0}, ''{1}'')' -f 'DisplayName', $WordToComplete ))

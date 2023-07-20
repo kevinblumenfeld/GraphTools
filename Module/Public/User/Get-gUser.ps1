@@ -82,7 +82,7 @@ function Get-gUser {
     [CmdletBinding()]
     param (
         [Parameter( Mandatory, ValueFromPipeline, ParameterSetName = 'pipeline' )]
-        [ArgumentCompleter([completer_iUser_DisplayName])]
+        [ArgumentCompleter([completer_gUser_DisplayName])]
         [object]
         $User,
 
