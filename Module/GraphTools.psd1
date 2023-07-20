@@ -117,7 +117,7 @@
             ProjectUri = 'https://github.com/kevinblumenfeld/GraphTools'
 
             # A URL to an icon representing this module.
-            # IconUri = ''
+            IconUri    = 'https://github.com/kevinblumenfeld/GraphTools/assets/28877715/88e8c8a4-aba0-4656-95bc-cdbca79ff822'
 
             # ReleaseNotes of this module
             # ReleaseNotes = ''

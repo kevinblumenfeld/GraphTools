@@ -1,65 +1,65 @@
 function Get-gApp {
     <#
-        .SYNOPSIS
-        Retrieves the list of applications within the organization.
-    
-        .DESCRIPTION
-        The Get-gApp function retrieves the list of applications within the organization.
-    
-        .PARAMETER App
-        Specifies the name or the ID of the application to retrieve. This parameter can be autocompleted.
-    
-        .PARAMETER AppId
-        Specifies the ID of the application to retrieve. This parameter takes precedence over the App parameter if both are supplied.
-    
-        .PARAMETER All
-        Specifies to list all applications within the organization.
-    
-        .EXAMPLE
-        Get-gApp -App 'MyApp'
-    
-        This command retrieves the application named 'MyApp'.
-    
-        .EXAMPLE
-        Get-gApp -AppId 'a5cd84d8-85a9-47cb-a1af-b2577a61063d'
-    
-        This command retrieves the application with the ID 'a5cd84d8-85a9-47cb-a1af-b2577a61063d'.
-    
-        .EXAMPLE
-        Get-gApp -All
-    
-        This command retrieves all applications within the organization.
- 
-        .EXAMPLE
-        Import-Csv .\apps.csv | Get-gApp | Export-Excel .\applist.xlsx
+    .SYNOPSIS
+    Retrieves the list of applications within the organization.
 
-        This command imports a list of application names or IDs from a CSV file, uses the Get-gApp function to retrieve details for the corresponding applications, and exports the resulting list to an Excel file named 'applist.xlsx'. To use this example, ensure the ImportExcel module is installed by running `Install-Module ImportExcel -Force`.
+    .DESCRIPTION
+    The Get-gApp function retrieves the list of applications within the organization.
 
-        .NOTES
-        Even though the displayName is used in some of the examples, displayNames are not unique, so it's best to use IDs. 
-    
-        To get optional claims, one per worksheet, use the following example:
-    
-        $all = Get-gApp -All
-    
-        foreach ($item in $all) {
-            $hash = [ordered]@{}
-            $hash['DisplayName'] = $item.displayName
-            foreach ($claim in ($item.OptionalClaims | Format-Flat -depth 99)) {
-                foreach ($thisDef in $claim.PSObject.Properties) {
-                    $Hash[$thisDef.name] = $thisDef.value
-                }
-    
-                [pscustomobject]$Hash | Format-Vertical | Export-Excel .\optionalclaims.xlsx -WorksheetName $item.displayName
+    .PARAMETER App
+    Specifies the name or the ID of the application to retrieve. This parameter can be autocompleted.
+
+    .PARAMETER AppId
+    Specifies the ID of the application to retrieve. This parameter takes precedence over the App parameter if both are supplied.
+
+    .PARAMETER All
+    Specifies to list all applications within the organization.
+
+    .EXAMPLE
+    Get-gApp -App 'MyApp'
+
+    This command retrieves the application named 'MyApp'.
+
+    .EXAMPLE
+    Get-gApp -AppId 'a5cd84d8-85a9-47cb-a1af-b2577a61063d'
+
+    This command retrieves the application with the ID 'a5cd84d8-85a9-47cb-a1af-b2577a61063d'.
+
+    .EXAMPLE
+    Get-gApp -All
+
+    This command retrieves all applications within the organization.
+
+    .EXAMPLE
+    Import-Csv .\apps.csv | Get-gApp | Export-Excel .\applist.xlsx
+
+    This command imports a list of application names or IDs from a CSV file, uses the Get-gApp function to retrieve details for the corresponding applications, and exports the resulting list to an Excel file named 'applist.xlsx'. To use this example, ensure the ImportExcel module is installed by running `Install-Module ImportExcel -Force`.
+
+    .NOTES
+    Even though the displayName is used in some of the examples, displayNames are not unique, so it's best to use IDs. 
+
+    To get optional claims, one per worksheet, use the following example:
+
+    $all = Get-gApp -All
+
+    foreach ($item in $all) {
+        $hash = [ordered]@{}
+        $hash['DisplayName'] = $item.displayName
+        foreach ($claim in ($item.OptionalClaims | Format-Flat -depth 99)) {
+            foreach ($thisDef in $claim.PSObject.Properties) {
+                $Hash[$thisDef.name] = $thisDef.value
             }
+
+            [pscustomobject]$Hash | Format-Vertical | Export-Excel .\optionalclaims.xlsx -WorksheetName $item.displayName
         }
-    
-        #>
+    }
+
+    #>
     [CmdletBinding(DefaultParameterSetName = 'Placeholder')]
     param (
 
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'pipeline' )]
-        [ArgumentCompleter([completer_iApp_DisplayName])]
+        [ArgumentCompleter([completer_gApp_DisplayName])]
         [object]
         $App,
 
