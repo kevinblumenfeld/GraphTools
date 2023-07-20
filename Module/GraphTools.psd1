@@ -12,7 +12,7 @@
     RootModule        = '.\GraphTools.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.002'
+    ModuleVersion     = '0.0.003'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()

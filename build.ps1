@@ -6,6 +6,10 @@ Param(
     
     [Parameter()]
     [switch]
+    $RemoveBuildFiles,
+
+    [Parameter()]
+    [switch]
     $Build,
 
     [Parameter()]
@@ -18,11 +22,16 @@ Param(
 )
 
 $modulePath = [IO.Path]::Combine($PSScriptRoot, 'Module')
+$outputFolder = [IO.Path]::Combine($PSScriptRoot, 'Output')
 $outputPath = [IO.Path]::Combine($PSScriptRoot, 'Output', 'GraphTools')
 
 if ($InstallDependencies) {
     Write-Host "Installing Dependencies"
     Install-Module -Name ModuleBuilder -Force -Repository PSGallery
+}
+if ($RemoveBuildFiles) {
+    Write-Host "Removing Build Files"
+    Remove-Item $outputFolder -Recurse -Force
 }
 if ($Build) {
     Write-Host "Building Module"
