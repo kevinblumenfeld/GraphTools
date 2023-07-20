@@ -18,7 +18,7 @@ Param(
 )
 
 $modulePath = [IO.Path]::Combine($PSScriptRoot, 'Module')
-$outputPath = [IO.Path]::Combine($PSScriptRoot, 'Output')
+$outputPath = [IO.Path]::Combine($PSScriptRoot, 'Output', 'GraphTools')
 
 if ($InstallDependencies) {
     Install-Module -Name ModuleBuilder -Force -Repository PSGallery
