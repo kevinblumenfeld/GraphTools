@@ -34,25 +34,13 @@ function Get-gUserAll {
 
         Set-gToken @TokenSplat
 
-        if (-not $using:Beta) {
-
-            Write-Host "NOT BETA"
-            $Uri = "https://graph.microsoft.com/v1.0/users?`$filter={0}" -f (
-                [System.Web.HttpUtility]::UrlEncode(('startswith({0}, ''{1}'')' -f 'mailnickname', "$Character" ))
-            )
-        }
-        else {
-            $Uri = "https://graph.microsoft.com/beta/users?`$filter={0}" -f (
-                [System.Web.HttpUtility]::UrlEncode(('startswith({0}, ''{1}'')' -f 'mailnickname', "$Character" ))
-            )
-        }
-        
-        if ($using:Select) {
-            $Uri = '{0}&$Select={1}' -f $Uri, $using:Select
-        }
+        $Uri = 'https://graph.microsoft.com/{0}/users?$filter={1}' -f @(
+            if ($using:Beta) { 'beta' } else { 'v1.0' }
+            [System.Web.HttpUtility]::UrlEncode(('startswith({0}, ''{1}'')' -f 'mailnickname', "$Character" ))
+        )
+        if ($using:Select) { $Uri = '{0}&$Select={1}' -f $Uri, $using:Select }
         $splat = @{
             Uri         = $Uri
-            Method      = 'GET'
             ErrorAction = 'Stop'
         }
         try {

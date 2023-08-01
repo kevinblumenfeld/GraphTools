@@ -1,42 +1,28 @@
 function Get-gUser {
+
     <#
     .SYNOPSIS
     Retrieve the properties and relationships of user objects in Azure Active Directory (AAD).
 
     .DESCRIPTION
-    This cmdlet retrieves user objects from AAD and provides various options for filtering and selecting specific properties.
-    Users can be identified by their ID, UserPrincipalName, or DisplayName. Additionally, a list of users can be provided in a CSV file.
-    The cmdlet also supports parallel processing of user objects, with a default throttle limit of 8 threads.
+    This cmdlet retrieves user objects from AAD, providing options for filtering and selecting specific properties.
+    Users can be identified by their ID, UserPrincipalName, or DisplayName. The cmdlet supports wildcard characters in the UserPrincipalName and DisplayName, and the objects piped into the function are processed individually.
 
     .PARAMETER User
-    Specifies the ID, UserPrincipalName, or DisplayName of the user to retrieve.
-    A list of users can also be provided in a CSV file.
-    If the CSV file has headers, they must contain one of the following columns: Id, UserPrincipalName, or DisplayName.
-    DisplayName is not unique in AAD and may result in multiple matches.
-
-    Note that tab completion is supported for the DisplayName parameter.
-    You can type a few letters and use tab multiple times to cycle through and find matching DisplayNames of users you want more details on.
-    For example, typing 'fr' and pressing tab multiple times may show both 'Frank' and 'Fred' as options.
+    Specifies the ID, UserPrincipalName, or DisplayName of the user to retrieve. This parameter supports wildcards (*) for UserPrincipalName and DisplayName. If this parameter is not provided, the cmdlet retrieves all users in the Azure AD Tenant.
 
     .PARAMETER Select
     Specifies a comma-separated list of properties to be returned by Microsoft Graph.
-    For example: Get-gUser -Select 'DisplayName,UserPrincipalName,Mail'
-    
-    .PARAMETER IncludeManager
-    If the user has a manager listed in Azure AD, this switch includes the user's manager in the output
 
-    .PARAMETER All
-    Switch to retrieve all users in the Azure AD Tenant.
+    .PARAMETER IncludeManager
+    If the user has a manager listed in Azure AD, this switch includes the user's manager in the output.
 
     .PARAMETER Beta
-    Switch to use the beta version of Microsoft Graph API.
+    Specifies to use the beta version of the Microsoft Graph API.
 
     .PARAMETER ThrottleLimit
-    Only used with the -All switch. Specifies the maximum number of parallel threads or concurrent operations allowed during parallel processing. Default value is 8.
-
-    .EXAMPLE
-    Import-Csv .\userlist.csv | Get-gUser
-
+    Specifies the maximum number of parallel threads or concurrent operations allowed during parallel processing. Default value is 8. This parameter is only used when the User parameter is not provided.
+    
     .EXAMPLE
     Import-Csv .\userlist.csv | Get-gUser -Select 'DisplayName,UserPrincipalName,Mail'
 
@@ -44,41 +30,60 @@ function Get-gUser {
     Import-Csv .\userlist.csv | Get-gUser -IncludeManager -Select 'DisplayName,UserPrincipalName'
     
     .EXAMPLE
-    Get-gUser -User '72ae3f1a-c8f1-4aad-af82-51473013fa74'
+    Get-gUser -User '72ae3f1a-c8f1-4aad-af82-51443013fa74'
 
     .EXAMPLE
     Get-gUser -User 'Kevin Blumenfeld'
     
     .EXAMPLE
-    Get-gUser -User 'Kevin Blumenfeld' -Beta
-    Retrieves user information for 'Kevin Blumenfeld' using the beta version of Microsoft Graph API.
+    Get-gUser -User 'Kevin*'
+    Retrieves user information for users whose name begins with 'Kevin'.
 
     .EXAMPLE
-    Get-gUser -User 'Kevin Blumenfeld' -Select 'DisplayName,UserPrincipalName'
+    Get-gUser -User '*Blumenfeld'
+    Retrieves user information for users whose name ends with 'Blumenfeld'.
 
     .EXAMPLE
-    Get-gUser -User 'Kevin Blumenfeld' -Select 'DisplayName,UserPrincipalName'
+    Get-gUser -User '*@company.com'
+    Retrieves user information for users whose UserPrincipalName ends with '@company.com'.
 
     .EXAMPLE
-    Get-gUser -User 'Kevin Blumenfeld' -IncludeManager -Select 'DisplayName,UserPrincipalName'
+    Get-gUser -User 'Kevin*' -Select 'DisplayName,UserPrincipalName'
+    Retrieves the DisplayName and UserPrincipalName for users whose name begins with 'Kevin'.
 
     .EXAMPLE
-    Get-gUser -All
+    Get-gUser -User '*@company.com' -Select 'DisplayName,UserPrincipalName'
+    Retrieves the DisplayName and UserPrincipalName for users whose UserPrincipalName ends with '@company.com'.
+
+    .EXAMPLE
+    Get-gUser -User 'Kevin*' -IncludeManager -Select 'DisplayName,UserPrincipalName'
+    Retrieves the DisplayName, UserPrincipalName, and manager for users whose name begins with 'Kevin'.
+
+    .EXAMPLE
+    Get-gUser -User '*@company.com' -IncludeManager -Select 'DisplayName,UserPrincipalName'
+    Retrieves the DisplayName, UserPrincipalName, and manager for users whose UserPrincipalName ends with '@company.com'.
+
+    .EXAMPLE
+    Get-gUser
     Retrieves all users in the Azure AD Tenant.
 
     .EXAMPLE
-    Get-gUser -All -Beta
+    Get-gUser -Beta
     Retrieves all users in the Azure AD Tenant using the beta version of Microsoft Graph API.
+
+    .EXAMPLE
+    Get-gUser -Select 'DisplayName,UserPrincipalName'
+    Retrieves all users in the Azure AD Tenant with only the specified properties.
+
+    .EXAMPLE
+    Get-gUser -Beta -Select 'DisplayName,UserPrincipalName'
+    Retrieves all users in the Azure AD Tenant using the beta version of Microsoft Graph API with only the specified properties.
+
+    .NOTES
+    When the -IncludeManager switch is used, a full user object is output for Manager field
     
-    .EXAMPLE
-    Get-gUser -All -Select 'DisplayName,UserPrincipalName'
-    Retrieves all users in the Azure AD Tenant.
-
-    .EXAMPLE
-    Get-gUser -All -Beta -Select 'DisplayName,UserPrincipalName'
-    Retrieves all users in the Azure AD Tenant using the beta version of Microsoft Graph API.
-
     #>
+
     [CmdletBinding()]
     param (
         [Parameter( Mandatory, ValueFromPipeline, ParameterSetName = 'pipeline' )]
@@ -94,76 +99,61 @@ function Get-gUser {
         [switch]
         $IncludeManager,
 
-        [Parameter(ParameterSetName = 'pipeline')]
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'pipeline' )]
+        [Parameter(ParameterSetName = 'All' )]
         [switch]
         $Beta,
 
-        [Parameter(ParameterSetName = 'All')]
-        [switch]
-        $All,
-
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'All' )]
         [int]
         $ThrottleLimit = 8
     )
 
     begin {
-        if ($All) {
-            $splat = @{
-                ThrottleLimit = $ThrottleLimit
-            }
-            if ($Select) {
-                $splat['Select'] = $Select
-            }
+        if ($PSCmdlet.ParameterSetName -eq 'All') {
+            $splat = @{ThrottleLimit = $ThrottleLimit }
+            if ($Select) { $splat['Select'] = $Select }
+            if ($Beta) { $splat['Beta'] = $true }
             Get-gUserAll @splat
             return
         }
     }
     process {
-        foreach ($Item in $User) {
-            if ($Item -is [string] -and $Item -as [Guid]) {
-                $filterstring = '{0}?' -f $Item
-            }
-            elseif ($Item -as [mailaddress]) {
-                $filterstring = "?`$filter=userprincipalname eq '{0}'" -f [System.Web.HttpUtility]::UrlEncode($Item)
-                
-            }
-            elseif ($Item -is [string]) {
-                $filterstring = "?`$filter=DisplayName eq '{0}'" -f $Item
-            }
-            else {
-                if ($Item.Id) {
-                    $filterstring = '{0}?' -f $Item.Id
-                }
-                elseif ($Item.UserPrincipalName -as [mailaddress]) {
-                    $filterstring = '{0}?' -f $Item.UserPrincipalName
-                }
-                elseif ($Item.DisplayName) {
-                    $filterstring = "?`$filter=DisplayName eq '{0}'" -f $Item.DisplayName
-                }
-            }
-            if ($filterstring) {
-                if ($Select) {
-                    $filterstring = '{0}&$Select={1}' -f $filterstring, $Select
-                }
-                if ($IncludeManager) {
-                    $filterstring = '{0}&$expand=manager' -f $filterstring
-                }
+        
+        if ($PSCmdlet.ParameterSetName -eq 'All') { return }
 
-                if (-not $Beta) {
-                    $Uri = 'https://graph.microsoft.com/v1.0/users/{0}' -f $filterstring
+        foreach ($Item in $User) {
+            $filterstring = if ($Item -match "\*+" -and $Item -as [mailaddress]) { "?`$filter={0}" -f [System.Web.HttpUtility]::UrlEncode((New-gFilterString $Item -SearchField 'userPrincipalName')) }
+            elseif ($Item -match "\*+") { "?`$filter={0}" -f [System.Web.HttpUtility]::UrlEncode((New-gFilterString $Item -SearchField 'displayName')) }
+            elseif ($Item -is [string] -and $Item -as [Guid]) { $Item }
+            elseif ($Item -as [mailaddress]) { "?`$filter=userPrincipalName eq '{0}'" -f [System.Web.HttpUtility]::UrlEncode($Item) }
+            elseif ($Item -is [string]) { "?`$filter=DisplayName eq '{0}'" -f [System.Web.HttpUtility]::UrlEncode($Item) }
+            elseif ($Item.Id) { $Item.Id }
+            elseif ($Item.UserPrincipalName -as [mailaddress]) { $Item.UserPrincipalName }
+            elseif ($Item.DisplayName) { "?`$filter=DisplayName eq '{0}'" -f $Item.DisplayName }
+
+            if (-not $filterstring) { continue }
+
+            if ($Select) { $filterstring = '{0}&$Select={1}' -f $filterstring, $Select }
+            if ($IncludeManager) { $filterstring = '{0}&$expand=manager' -f $filterstring }
+
+            $Uri = 'https://graph.microsoft.com/{0}/users/{1}' -f @(
+                if ($Beta) { 'beta' } else { 'v1.0' }
+                $filterString
+            )
+            $splat = @{ 'Uri' = $Uri }
+            
+            write-host ('uri {0}' -f $Uri)
+
+            if ($filterstring -like '*filter=*') {
+                if ($filterstring -like '*endswith*') {
+                    $splat['Eventual'] = $true
+                    $splat['Uri'] = '{0}&$count=true' -f $Uri
                 }
-                else {
-                    $Uri = 'https://graph.microsoft.com/beta/users/{0}' -f $filterstring
-                }
-                
-                if ($filterstring -like '*filter=*') {
-                    (Invoke-gRestMethod -Method 'GET' -Uri $Uri).value
-                    continue
-                }
-                Invoke-gRestMethod -Method 'GET' -Uri $Uri
+                (Invoke-gRestMethod @splat).value
+                continue
             }
+            Invoke-gRestMethod -Method 'GET' -Uri $Uri
         }
     }
 }
