@@ -14,6 +14,6 @@ function Get-gUserApp {
         $RestSplat = @{
             Uri = "https://graph.microsoft.com/v1.0/groups/{0}/appRoleAssignments/?`$select={1}" -f $Group.ID, $Select
         }
-        (Invoke-RestMethod @RestSplat).value
+        (Invoke-gRestMethod @RestSplat).value
     }
 }

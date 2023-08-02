@@ -14,5 +14,5 @@ function Get-gUserMemberOf {
         Uri = "https://graph.microsoft.com/v1.0/users/{0}/memberOf/microsoft.graph.group/?`$select={1}" -f $UserID, $Select
     }
     
-    (Invoke-RestMethod @RestSplat).value
+    (Invoke-gRestMethod @RestSplat).value
 }
