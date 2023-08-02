@@ -34,11 +34,11 @@ function Get-gApp {
             else {
                 Write-Error "Application not found"
                 continue
-            }
+            } 
             
             $RestSplat = @{ Uri = 'https://graph.microsoft.com/v1.0/applications/{0}' -f $UriFilter }
 
-            if ($UriFilter -like '*filter =*') {
+            if ($UriFilter -like '*filter=*') {
                 (Invoke-gRestMethod @RestSplat).value
                 continue
             }

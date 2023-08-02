@@ -81,7 +81,7 @@ function Get-gUser {
 
     .NOTES
     When the -IncludeManager switch is used, a full user object is output for Manager field
-    
+
     #>
 
     [CmdletBinding()]
@@ -142,8 +142,6 @@ function Get-gUser {
                 $filterString
             )
             $splat = @{ 'Uri' = $Uri }
-            
-            write-host ('uri {0}' -f $Uri)
 
             if ($filterstring -like '*filter=*') {
                 if ($filterstring -like '*endswith*') {

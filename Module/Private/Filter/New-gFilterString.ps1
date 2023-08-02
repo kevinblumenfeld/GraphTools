@@ -10,7 +10,7 @@ function New-gFilterString {
             
         [parameter(position = 1)]
         [string]
-        $SearchField = 'displayName',
+        $SearchField,
 
         [parameter()]
         $ExtraFields = @(),
@@ -22,11 +22,13 @@ function New-gFilterString {
     # Adapted from James O'Neil https://youtu.be/hXFbfwmdNsU: https://github.com/jhoneill/MsftGraph
     
     if ($toLower) { $SearchTerm = $SearchTerm.ToLower() }
-    if ($Searchterm -as [mailaddress]) { $SearchField = 'userPrincipalName' }
+    if ($Searchterm -as [mailaddress] -and (-not $SearchField)) { $SearchField = 'userPrincipalName' }
+    
     #Replace '  with '' - ensure we don't turn '' into '''' !
     $SearchTerm = $SearchTerm -replace "(?<!')'(?!')" , "''"
     #validation blocked "* and *something*" so we have no *, * at the start, in the middle, or at the end
-    if ($SearchTerm -notmatch '\*') { $filterStrings = , "$SearchField eq '$SearchTerm'" }
+    # if ($SearchField -eq 'proxyAddresses') { $filterStrings = , "{0}/any(p:endsWith(p, '{1}'))" -f $SearchField, $SearchTerm }
+    elseif ($SearchTerm -notmatch '\*') { $filterStrings = , "$SearchField eq '$SearchTerm'" }
     elseif ($SearchTerm -match '^\*(.+)') { $filterStrings = , "endswith($SearchField,'$($Matches[1])')" }
     elseif ($SearchTerm -match '(.+)\*$') { $filterStrings = , "startswith($SearchField,'$($Matches[1])')" }
     elseif ($SearchTerm -match '^(.+)\*(.+)$') {
