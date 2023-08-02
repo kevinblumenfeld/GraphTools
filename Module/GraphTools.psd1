@@ -12,7 +12,7 @@
     RootModule        = '.\GraphTools.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.004'
+    ModuleVersion     = '0.0.005'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -77,11 +77,18 @@
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport = @(
         'Connect-gGraph'
+        'Format-gObject'
+        'Get-gApp'
+        'Get-gDirectoryExtension'
         'Get-gRoleAssignment'
         'Get-gRoleDefinition'
         'Get-gUser'
+        'Get-gUserApp'
         'Get-gUserDeleted'
+        'Get-gUserMemberOf'
+        'New-gDirectoryExtension'
         'New-gRoleAssignment'
+        'Search-gUser'
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
