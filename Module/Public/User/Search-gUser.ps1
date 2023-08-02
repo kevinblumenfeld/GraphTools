@@ -8,9 +8,9 @@ function Search-gUser {
     The function accepts several parameters to refine your search, such as the user's name, the search field, 
     and optional parameters to further specify your request.
 
-    .PARAMETER User
-    Specifies the user to search for. This parameter is mandatory and accepts a string or object that
-    defines the user.
+    .PARAMETER SearchValue
+    Specifies the value of the attribute to search for. This parameter is mandatory and accepts a string or object that
+    defines the object.
 
     .PARAMETER SearchField
     Specifies the field to search. This parameter is mandatory.
@@ -45,7 +45,7 @@ function Search-gUser {
         [Parameter( Mandatory )]
         [ArgumentCompleter([completer_gUser_DisplayName])]
         [object]
-        $User,
+        $SearchValue,
 
         [Parameter( Mandatory )]
         [string]
@@ -69,7 +69,7 @@ function Search-gUser {
         
         if ($PSCmdlet.ParameterSetName -eq 'All') { return }
 
-        foreach ($Item in $User) {
+        foreach ($Item in $SearchValue) {
             $filterstring = if ($Item -match "\*+") { "?`$filter={0}" -f (New-gFilterString $Item -SearchField $SearchField) }
             else { "?`$filter={0} eq '{1}'" -f $SearchField, $Item }
             if (-not $filterstring) { continue }

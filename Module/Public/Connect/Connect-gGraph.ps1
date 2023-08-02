@@ -88,7 +88,7 @@ function Connect-gGraph {
         }
     } until ($Response.access_token)
 
-    $Script:TokenExpirationTime = ([datetime]::UtcNow).AddSeconds($Response.expires_in - 10)
+    $Script:TokenExpirationTime = ([datetime]::UtcNow).AddSeconds($Response['expires_in'] - 10)
     $Script:Token = $Response.access_token
 }
 
