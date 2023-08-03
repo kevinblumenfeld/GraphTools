@@ -61,12 +61,9 @@ function Invoke-gRestMethod {
 
     do {
         try {
-            $i = 0
-            while ((-not $script:Token -or ([datetime]::UtcNow -ge $script:TokenExpirationTime)) -and ($i -le 30)) { 
+            while ((-not $script:Token) -or ([DateTime]::UtcNow -ge $script:TokenExpirationTime )) { 
                 Connect-gGraph -ClientID $Script:ClientID -TenantID $Script:TenantID -Secret $Script:Secret
-                $i++
             }
-
             $RestSplat['Headers']['Authorization'] = "Bearer $Script:Token"
 
             # Send the response
@@ -85,7 +82,7 @@ function Invoke-gRestMethod {
 
             elseif ($_.Exception.Response.StatusCode -eq 401) {
                 Write-Verbose ('IWR ERROR [ {0} ] CONNECT THEN SLEEP FOR [  5  ] SECONDS' -f $_.Exception.Response.StatusCode)
-                Connect-gGraph
+                Connect-gGraph -ClientID $Script:ClientID -TenantID $Script:TenantID -Secret $Script:Secret
                 Start-Sleep -Seconds 5
             }
 
