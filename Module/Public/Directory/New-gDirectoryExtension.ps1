@@ -62,7 +62,7 @@ function New-gDirectoryExtension {
     }
 
     $RestSplat = @{
-        Uri    = "https://graph.microsoft.com/beta/applications/{0}/extensionProperties" -f $ApplicationID
+        Uri    = "https://graph.microsoft.com/v1.0/applications/{0}/extensionProperties" -f $ApplicationID
         Body   = $Body | ConvertTo-Json
         Method = 'POST'
     }

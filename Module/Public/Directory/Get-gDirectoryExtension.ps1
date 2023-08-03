@@ -37,7 +37,7 @@ function Get-gDirectoryExtension {
         }
         foreach ($thisApp in $AppList) {
 
-            $Uri = "https://graph.microsoft.com/beta/applications/{0}/extensionProperties" -f $thisApp.Id
+            $Uri = "https://graph.microsoft.com/v1.0/applications/{0}/extensionProperties" -f $thisApp.Id
             $RestSplat = @{
                 Uri    = $Uri
                 Method = 'GET'
