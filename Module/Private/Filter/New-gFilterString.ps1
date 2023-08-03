@@ -28,7 +28,7 @@ function New-gFilterString {
     $SearchTerm = $SearchTerm -replace "(?<!')'(?!')" , "''"
     #validation blocked "* and *something*" so we have no *, * at the start, in the middle, or at the end
     # if ($SearchField -eq 'proxyAddresses') { $filterStrings = , "{0}/any(p:endsWith(p, '{1}'))" -f $SearchField, $SearchTerm }
-    elseif ($SearchTerm -notmatch '\*') { $filterStrings = , "$SearchField eq '$SearchTerm'" }
+    if ($SearchTerm -notmatch '\*') { $filterStrings = , "$SearchField eq '$SearchTerm'" }
     elseif ($SearchTerm -match '^\*(.+)') { $filterStrings = , "endswith($SearchField,'$($Matches[1])')" }
     elseif ($SearchTerm -match '(.+)\*$') { $filterStrings = , "startswith($SearchField,'$($Matches[1])')" }
     elseif ($SearchTerm -match '^(.+)\*(.+)$') {
