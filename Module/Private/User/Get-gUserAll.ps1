@@ -39,6 +39,7 @@ function Get-gUserAll {
             [System.Web.HttpUtility]::UrlEncode(('startswith({0}, ''{1}'')' -f 'mailnickname', "$Character" ))
         )
         if ($using:Select) { $Uri = '{0}&$Select={1}' -f $Uri, $using:Select }
+        Write-Host "URI $URI"
         $splat = @{
             Uri         = $Uri
             ErrorAction = 'Stop'
